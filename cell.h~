@@ -1,0 +1,44 @@
+//
+//  cell.h
+//  A5
+//
+//  Created by Wei Zheng on 4/3/14.
+//  Copyright (c) 2014 Wei Zheng. All rights reserved.
+//
+
+#ifndef __A5__cell__
+#define __A5__cell__
+
+#include <iostream>
+#include "block.h"
+#include "textDisplay.h"
+#include "window.h"
+class cell{
+protected:
+    int row,col; // row and col is position of cell, level is when do you get this block.
+    block * b;
+    char type; // the chars types of block.
+    bool isOn; // check the cell is empty or not.
+    Xwindow*w;
+    
+public:
+    cell();
+    bool getOn(); // get isOn.
+    void setChar(char ch); // set cell's type to ch.
+    void setAlive(int n);
+    void setWindow(Xwindow *w);
+    void DelBlock();
+    block* getBlock();
+    void setCoords(int x,int y);
+    void setBlock(block *b);
+    char getType();
+    bool compareBlock(block *b);
+    void setNull();
+    void restart();
+    void notifyDisplay(TextDisplay &td,bool mode); // display cell to the text display.
+    void draw();
+    void undraw();
+    ~cell();
+};
+
+#endif /* defined(__A5__cell__) */

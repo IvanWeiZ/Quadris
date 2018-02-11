@@ -1,0 +1,64 @@
+//
+//  board.h
+//  A5
+//
+//  Created by Wei Zheng on 4/3/14.
+//  Copyright (c) 2014 Wei Zheng. All rights reserved.
+//
+
+#ifndef __A5__board__
+#define __A5__board__
+
+#include <iostream>
+#include <sstream>
+#include "block.h"
+#include "cell.h"
+#include "nextBlock.h"
+#include "window.h"
+extern const char clockwise;
+extern const char conterclockwise;
+
+class board{
+    cell **theGrid;
+    block *currentblock;
+    nextBlock *nb;
+    bool lose;
+    TextDisplay *td;
+    bool textmode;
+    int Score,HiScore,Level;
+    Xwindow*w;
+    void boardUpdate(int num, char direction);
+    bool SpacetoRotate(vector *v);
+    
+public:
+    board(nextBlock* nb, int level,bool textmode);
+    ~board();
+    void setlevel(char c);
+    
+    bool getNextblock();
+    bool getLose();
+    int getLevel();
+    
+    bool SpacetoRotate();
+    int SpacetoRight();
+    int SpacetoLeft();
+    int SpacetoDown();
+    
+    void left(int num);
+    void right(int num);
+    void down(int num);
+    void rotate(char direction);
+    void restart();
+    void drop();
+    
+    void ScoreBlock(int l);
+    bool isfull(int r);
+    void delRow(int r);
+    void delfull();
+    void updateScore(int r);
+    
+    friend std::ostream &operator<<(std::ostream &out, const board &g);
+};
+
+
+#endif /* defined(__A5__board__) */

@@ -1,0 +1,170 @@
+//
+//  main.cpp
+//  A5
+//
+//  Created by Wei Zheng on 3/31/14.
+//  Copyright (c) 2014 Wei Zheng. All rights reserved.
+//
+
+#include <iostream>
+#include <cstdlib>
+#include <fstream>
+#include <sstream>
+#include "nextBlock.h"
+#include "board.h"
+#include "string"
+
+using namespace std;
+const char clockwise='C';
+const char conterclockwise='R';
+
+
+string getCommand(string s){
+
+   if (s[0] == 'd'){
+        if (s[1] == 'o') {
+            return "down";
+        }
+        else if(s[1] == 'r')
+            return "drop";
+    }
+    else if(s[0] == 'r'){
+        if(s[1]=='i'){
+            return "right";
+        }
+        else if(s[1]=='e'){
+            return "restart";
+        }
+    }
+    else if(s[0] == 'c'){
+        if (s[1] == 'l'){
+            return "clockwise";
+        }
+        else if (s[1] == 'o'){
+            return "counterclockwise";
+        }
+    }
+    else if (s[0] == 'l'){
+        if (s[2] == 'f'){
+            return "left";
+        }
+        else if (s[5] == 'u'){
+            return "levelup";
+        }
+        else if (s[5] == 'd'){
+            return "leveldown";
+        }
+    }
+    return "";
+}
+
+
+int main(int argc, char* argv[]) {
+    //_____________Get variable from command line______________
+    string s;
+    string sequence_char="";
+    int level=0;//to be changed
+    int seed=1;
+    bool textmode=false;
+    string kk="t1.out";
+    int i=1;
+    while(i<argc){
+        s=argv[i];
+        if(s=="-startlevel"){
+            i++;
+            level=atoi(argv[i]);
+        }
+        else if (s=="-text"){
+            textmode=true;
+        }
+        else if (s=="-scriptfile"){
+            ifstream f;
+            string temp;
+            i++;
+            string s1=argv[i];
+            f.open(s1.c_str());
+            while (f>>temp){ 
+                sequence_char=sequence_char+temp;
+            }
+        }
+        else if(s=="-seed"){
+            i++;
+            seed=atoi(argv[i]);
+        }
+        i++;
+    }
+    
+    if (sequence_char==""&&level==0){
+	cout<<"The file is empty or it is not readable"<<endl;
+	cout<<"Level changed to 1"<<endl;
+	level=1;}
+    
+    //_____________setup required variable___________________
+    nextBlock *nb=new nextBlock(level,0,sequence_char,seed);
+    nb->setSeed(seed);
+    
+    board b(nb,level,textmode);
+    string input_str;
+    nb->genNextblock();
+    b.getNextblock();
+    cout<<b;
+    string command;
+    int command_num=1;
+    
+    //____________get command from cin____________________
+    while(cin>>input_str){
+        string s;
+        istringstream ss(input_str);
+        ss>> command_num;
+        ss>> command;
+        if (command_num == 0){
+            command = input_str;
+            command_num = 1;
+        }
+        command = getCommand(command);
+
+        if(command=="left"){
+            b.left(command_num);
+        }
+        else if(command=="right"){
+            b.right(command_num);
+        }
+        else if(command=="down"){
+            b.down(command_num);
+        }
+        else if(command=="drop"){
+            b.drop();
+            b.delfull();
+            b.getNextblock();}
+        else if(command=="clockwise"){
+            b.rotate(clockwise);
+        }
+        else if(command=="counterclockwise"){
+            b.rotate(conterclockwise);
+        }
+        else if(command=="levelup"){
+            b.setlevel('U');
+        }
+        else if(command=="leveldown"){
+	    if(b.getLevel()==1&&sequence_char==""){
+		cout<<"There is not a valid sequence.txt"<<endl;
+	    }
+	    else{
+            b.setlevel('D');}
+        }
+        
+        else if(command=="restart"){
+            b.restart();
+            b.getNextblock();
+        }
+        
+        cout<<b;
+        if (b.getLose()==true){
+            cout<<"There is no place for next block"<<endl;
+            delete nb;
+            return 0;
+        }
+    }
+    delete nb;
+}
+
